@@ -31,12 +31,23 @@ public class BoardController {
 
 	@PostMapping("/write")
 	public String boardWritePost(@ModelAttribute Board board) {
-		User user = (User) session.getAttribute("user_info");
+		System.out.println(board);
+		User user = (User) session.getAttribute("user_info"); //session에 값이 있는지 여부 확인
+		
 		System.out.println(user);
-		String userId = user.getEmail();
-		board.setUserId(userId);
-		boardRepository.save(board);
-		return "board/write";
+		
+		if(user == null) {
+			return "alert/writeAfterSign";
+		} else if (board.getTitle() == null || board.getContent()==null) {
+			return "alert/writeTitleContentNull";
+		} else {
+			String userId = user.getEmail();
+			board.setUserId(userId);
+			boardRepository.save(board);
+			return "board/write";
+		}
+		
+		
 	}
 	// 로그인없이 게시판 사용할때 로그인부터 하고 오세요라고 한다 (session에 user_info가 없으니
 	// NullPointerException나오고)
